@@ -1,0 +1,1 @@
+Ola, seja bem vindo ao node: <%= $facts[networking][fqdn]%>
