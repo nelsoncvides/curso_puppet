@@ -24,11 +24,6 @@ case $facts['os']['family']{
   }
 }
 
-
-package { 'nginx' :
-  ensure => present,
-}
-
 $user = $facts['os']['family'] ? {
   'redhat'  => 'nginx',
   'debian'  => 'www-data',
@@ -41,18 +36,27 @@ File {
   mode  => '0664',
 }
 
-file { $docroot :
+package { 'nginx' :
+  ensure => present,
+}
+
+nginx::vhost { 'default' :
+  docroot => $docroot,
+  servername => $facts['fqdn']
+}
+
+file { "${docroot}/vhosts" :
   ensure => directory,
 }
 
-file { "${docroot}/index.html" :
-  ensure => file,
-  content => epp('nginx/index.html.epp')
-}
+#file { "${docroot}/index.html" :
+#  ensure => file,
+#  content => epp('nginx/index.html.epp')
+#}
 
 file { "${confdir}/nginx.conf" :
   ensure    => file,
-  content   => epp('nginx/nginx.conf.epp', 
+  content   => epp('nginx/nginx.conf.epp',
                     {
                       user     => $user,
                       logdir   => $logdir,
@@ -63,16 +67,15 @@ file { "${confdir}/nginx.conf" :
   notify    => Service['nginx'],
 }
 
-file { "${blockdir}/default.conf" :
-  ensure  => file,
-  content =>  epp('nginx/default.conf.epp',
-                    {
-                      docroot => $docroot,
-                    }),
-  require => Package[$package],
-  notify  => Service['nginx'],
-
-}
+#file { "${blockdir}/default.conf" :
+#  ensure  => file,
+#  content =>  epp('nginx/default.conf.epp',
+#                    {
+#                      docroot => $docroot,
+#                    }),
+#  require => Package[$package],
+#  notify  => Service['nginx'],
+#}
 
 service { 'nginx' :
   ensure => running,
