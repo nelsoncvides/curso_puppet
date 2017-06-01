@@ -1,4 +1,7 @@
-class nginx {
+class nginx (
+  String $root,
+  Boolean $highperf,
+  ){
 
 case $facts['os']['family']{
   'redhat', 'debian' : {
@@ -62,6 +65,7 @@ file { "${confdir}/nginx.conf" :
                       logdir   => $logdir,
                       confdir  => $confdir,
                       blockdir => $blockdir,
+                      highperf => $highperf,
                     }),
   require   => Package[$package],
   notify    => Service['nginx'],
