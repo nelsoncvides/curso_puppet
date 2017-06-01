@@ -1,31 +1,14 @@
 class nginx (
-  String $root,
-  Boolean $highperf,
-  ){
-
-case $facts['os']['family']{
-  'redhat', 'debian' : {
-    $package = 'nginx'
-    $owner = 'root'
-    $group = 'root'
-    $docroot = '/var/www'
-    $confdir = '/etc/nginx'
-    $blockdir = '/etc/nginx/conf.d'
-    $logdir = '/var/log/nginx'
-  }
-  'windows' : {
-    $package = 'nginx-service'
-    $owner = 'Administrator'
-    $group = 'Administrators'
-    $docroot = 'C:/ProgramData/nginx/html'
-    $confdir = 'C:/ProgramData/nginx/conf'
-    $blockdir = 'C:/ProgramData/nginx/conf.d'
-    $logdir = 'C:/ProgramData/nginx/log'
-  }
-  default : {
-    fail("Module ${module_name} is not supported on ${facts['os']['family']}")
-  }
-}
+  String $package   = $nginx::params::package,
+  String $owner     = $nginx::params::owner,
+  String $group     = $nginx::params::group,
+  String $docroot   = $nginx::params::docroot,
+  String $confdir   = $nginx::params::confdir,
+  String $blockdir  = $nginx::params::blockdir,
+  String $logdir    = $nginx::params::logdir,
+  String $root      = $nginx::params::root,
+  Boolean $highperf = $nginx::params::highperf,
+  ) inherits nginx::params {
 
 $user = $facts['os']['family'] ? {
   'redhat'  => 'nginx',
